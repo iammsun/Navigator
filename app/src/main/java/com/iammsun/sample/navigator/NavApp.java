@@ -12,7 +12,7 @@ public class NavApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (BuildConfig.RUNTIME_NANOTATION) {
+        if (BuildConfig.RUNTIME_ANNOTATION) {
             RuntimeNav.load(this);
         }
     }

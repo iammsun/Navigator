@@ -39,20 +39,22 @@ public class MainActivity extends AppCompatActivity {
                 parcelInfo.writeToParcel(parcel, 0);
                 byte[] data = parcel.marshall();
                 parcel.recycle();
-                Navigator.open(MainActivity.this, "nav://iammsun" +
+                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" + "" +
                         ".com/a?param1=aaa&param2=111&parcel=" + Uri.encode(new String(data)));
             }
         });
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigator.open(MainActivity.this, "nav://iammsun.com/b?param1=bbb&param2=222");
+                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" +
+                        ".com/b?param1=bbb&param2=222");
             }
         });
         fab3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigator.open(MainActivity.this, "nav://iammsun.com/c?param1=ccc&param2=333");
+                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" +
+                        ".com/c?param1=ccc&param2=333");
             }
         });
     }

@@ -79,8 +79,9 @@ public class AnnotationProcessor extends AbstractProcessor {
 
             for (String formatUri : router.value()) {
                 ClassName className = ClassName.get((TypeElement) activity);
-                mapMethod.addStatement("com.iammsun.navigator.Navigator.map($S, $T" +
-                        ".class, extraTypes)", formatUri, className);
+                mapMethod.addStatement("com.iammsun.navigator.Navigator.map($S, null, $S, " +
+                        "extraTypes)", formatUri, className.packageName() + "." + className
+                        .simpleName());
             }
             mapMethod.addCode("\n");
         }

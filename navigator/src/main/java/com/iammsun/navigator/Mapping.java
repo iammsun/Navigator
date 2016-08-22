@@ -1,15 +1,14 @@
 package com.iammsun.navigator;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Created by sunmeng on 16/8/15.
@@ -19,30 +18,32 @@ public class Mapping {
     private static final String TAG = "Mapping";
 
     private final Uri format;
-    private final Class<? extends Activity> activity;
+    private final String pkgName;
+    private final String clsName;
     private final ExtraTypes extraTypes;
 
     private static final String EXTRA_REQUEST = "request";
 
-    public Mapping(String formatUri, Class<? extends Activity> activity, ExtraTypes extraTypes) {
-        if (formatUri == null) {
-            throw new NullPointerException("format can not be null");
-        }
-        if (activity == null) {
-            throw new NullPointerException("activity can not be null");
-        }
+    public Mapping(String formatUri, String pkgName, String clsName, ExtraTypes extraTypes) {
+        assert formatUri != null;
+        assert clsName != null;
         this.format = Uri.parse(formatUri);
-        this.activity = activity;
+        this.clsName = clsName;
+        this.pkgName = pkgName;
         this.extraTypes = extraTypes;
     }
 
-    public Class<? extends Activity> getActivity() {
-        return activity;
+    public ComponentName getComponentName(Context context) {
+        assert !(context == null && pkgName == null);
+        if (pkgName == null) {
+            return new ComponentName(context, clsName);
+        }
+        return new ComponentName(pkgName, clsName);
     }
 
     @Override
     public String toString() {
-        return String.format("%s => %s", format, activity);
+        return String.format("%s => %s", format, clsName);
     }
 
     @Override
