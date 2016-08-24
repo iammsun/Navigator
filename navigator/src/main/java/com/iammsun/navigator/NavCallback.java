@@ -9,13 +9,11 @@ import android.net.Uri;
  */
 public interface NavCallback {
 
-    void notFound(Context context, Uri uri);
-
     void beforeOpen(Context context, Uri uri);
 
     void onNavigate(Context context, Uri uri, Intent intent);
 
     void afterOpen(Context context, Uri uri);
 
-    void error(Context context, Uri uri, Throwable e);
+    void notFound(Context context, Uri uri);
 }

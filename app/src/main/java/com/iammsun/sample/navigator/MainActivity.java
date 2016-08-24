@@ -1,83 +1,71 @@
 package com.iammsun.sample.navigator;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
-import com.iammsun.navigator.RuntimeNav;
 import com.iammsun.navigator.Navigator;
 
-
 public class MainActivity extends AppCompatActivity {
+
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        FloatingActionButton fab3 = (FloatingActionButton) findViewById(R.id.fab3);
-        fab1.setOnClickListener(new View.OnClickListener() {
+        webView = (WebView) findViewById(R.id.webview);
+        webView.setWebViewClient(new WebViewClient() {
+
             @Override
-            public void onClick(View view) {
-                ParcelInfo parcelInfo = new ParcelInfo();
-                parcelInfo.setNumIid(123);
-                parcelInfo.setOuterId("out?Id=11&");
-                parcelInfo.setPropertiesName("propertiesName");
-                parcelInfo.setQuantity(321);
-                parcelInfo.setSkuId(111);
-                Parcel parcel = Parcel.obtain();
-                parcelInfo.writeToParcel(parcel, 0);
-                byte[] data = parcel.marshall();
-                parcel.recycle();
-                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" + "" +
-                        ".com/a?param1=aaa&param2=111&parcel=" + Uri.encode(new String(data)));
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Uri uri = Uri.parse(url);
+                if (!isOverrideUrl(uri)) {
+                    return false;
+                }
+                if ("native".equals(uri.getQuery())) {
+                    override2Activity();
+                } else {
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                }
+                return true;
             }
         });
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" +
-                        ".com/b?param1=bbb&param2=222");
-            }
-        });
-        fab3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Navigator.Builder(MainActivity.this).build().open("nav://iammsun" +
-                        ".com/c?param1=ccc&param2=333");
-            }
-        });
+
+        webView.loadUrl("file:///android_asset/index.html");
+    }
+
+    private static boolean isOverrideUrl(Uri uri) {
+        return "nav".equals(uri.getScheme()) && "go_native".equals(uri.getHost());
+    }
+
+    private static ParcelInfo getParcelInfo() {
+        ParcelInfo parcelInfo = new ParcelInfo();
+        parcelInfo.setNumIid(123);
+        parcelInfo.setOuterId("out?Id=11&");
+        parcelInfo.setPropertiesName("propertiesName");
+        parcelInfo.setQuantity(321);
+        parcelInfo.setSkuId(111);
+        return parcelInfo;
+    }
+
+    private void override2Activity() {
+        Bundle extras = new Bundle();
+        extras.putParcelable("parcel", getParcelInfo());
+        new Navigator.Builder(this).setExtras(extras).build().open
+                ("app://activities/a?source=override2Activity");
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }
